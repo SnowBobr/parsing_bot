@@ -1,6 +1,7 @@
 from aiogram import executor, types
 from loader import dp
 from config import bobr
+from handlers import dp
 
 
 async def on_bot_startup(dp: dp):

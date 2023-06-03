@@ -1,8 +1,9 @@
+from loader import bot, dp
+import random
 import requests
 from bs4 import BeautifulSoup
 from time import sleep
 """импортируем модуль паузы из модуля работы со временем"""
-import random
 
 
 headers = {
@@ -23,12 +24,12 @@ def find_max_number_of_page(url):
         if i.text.isdigit():
             if int(i.text) > page:
                 page = int(i.text)
-    
-    return page
+    return page + 1
 
 
-def scrap_name_price_img(quantities):
-    for count in range(1, quantities + 1):
+async def scrap_name_price_img(message):
+
+    for count in range(1, find_max_number_of_page(page_url)):
         # так как на сайте 7 страниц делаем цикл по поиску на всех страницах
         sleep(random.randint(3, 7))
         url = f"https://scrapingclub.com/exercise/list_basic/?page={count}"
@@ -51,8 +52,8 @@ def scrap_name_price_img(quantities):
             # по аналогии достали цену
             product_url = "https://scrapingclub.com" + i.find("img", class_="card-img-top img-fluid").get("src")
             # вытягиваем ссылку, тег имг, класс, а дальше ссылка не строка, по этому методом гет, по атрибуту срц ну и приклеиваем корневой адрес
+            text = f"{name} {price} {product_url}"
+            await bot.send_message(chat_id=message.from_user.id, text=text)
+        
+    await bot.send_message(chat_id=message.from_user.id, text="parsing succesfuled ended")
 
-            print(name, price, product_url, sep="\n", end="\n\n")
-
-
-scrap_name_price_img(find_max_number_of_page(page_url))
