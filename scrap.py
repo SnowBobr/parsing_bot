@@ -1,4 +1,3 @@
-from loader import bot, dp
 import random
 import requests
 from bs4 import BeautifulSoup
@@ -13,31 +12,29 @@ headers = {
 
 page_url = "https://scrapingclub.com/exercise/list_basic/"
 
-
 def find_max_number_of_page(url):
     res = requests.get(url, headers=headers)
     page_soup = BeautifulSoup(res.text, "lxml")
     page = 1
     page_data = page_soup.find_all("a", class_="page-link")
     for i in page_data:
-        sleep(random.randint(3, 7)) #  таким способом в начале каждого цикла ставим паузу на 3 - 7 секунды, что бы сайт не индетефицировал бота
+        # sleep(random.randint(3, 7)) #  таким способом в начале каждого цикла ставим паузу на 3 - 7 секунды, что бы сайт не индетефицировал бота
         if i.text.isdigit():
             if int(i.text) > page:
                 page = int(i.text)
     return page + 1
 
 
-async def scrap_name_price_img(message):
-
+def get_urls():
     for count in range(1, find_max_number_of_page(page_url)):
         # так как на сайте 7 страниц делаем цикл по поиску на всех страницах
-        sleep(random.randint(3, 7))
+        # sleep(random.randint(3, 7))
         url = f"https://scrapingclub.com/exercise/list_basic/?page={count}"
 
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, "lxml")  #  lxml, html.parser - парсеры страниц, для удобного представления данных
 
-        data = soup.find("div", class_="col-lg-4 col-md-6 mb-4") 
+        # data = soup.find("div", class_="col-lg-4 col-md-6 mb-4") 
         # для одного элемента
         data = soup.find_all("div", class_="col-lg-4 col-md-6 mb-4") 
         # для всех элементов
@@ -45,15 +42,30 @@ async def scrap_name_price_img(message):
         # через запятую параметры искомых обьектов
         # так выводиться только первый обьект
         for i in data:
-            name = i.find("h4", class_="card-title").text.replace("\n", "")
+            card_url = "https://scrapingclub.com" + i.find("a").get("href")
+            yield card_url
+            #  это вместо обычного возврата, превращаем в генератор
+            #  он будет выдавать по 1 элементу в дальнейшем выполнении функции
+
+
+def array():
+    for card in get_urls():
+        xls_list = []
+        response = requests.get(card, headers=headers)
+        soup = BeautifulSoup(response.text, "lxml")
+        data = soup.find("div", class_="card-body")
+
+        name = data.find("h3", class_="card-title").text.replace("\n", "")
             # когда добрались до самого содержимого  в виде текста, применяем атрибут текст и если необходимо
             # убираем лишнее - в данном случае переносы строки
-            price = i.find("h5").text
-            # по аналогии достали цену
-            product_url = "https://scrapingclub.com" + i.find("img", class_="card-img-top img-fluid").get("src")
-            # вытягиваем ссылку, тег имг, класс, а дальше ссылка не строка, по этому методом гет, по атрибуту срц ну и приклеиваем корневой адрес
-            text = f"{name} {price} {product_url}"
-            await bot.send_message(chat_id=message.from_user.id, text=text)
-        
-    await bot.send_message(chat_id=message.from_user.id, text="parsing succesfuled ended")
+        description = data.find("p", class_="card-text").text
+        price = data.find("h4").text
+            # # по аналогии достали цену
+        img_url = "https://scrapingclub.com" + soup.find("img", class_="card-img-top img-fluid").get("src")
+            # # вытягиваем ссылку, тег имг, класс, а дальше ссылка не строка, по этому методом гет, по атрибуту срц ну и приклеиваем корневой адрес
+        yield name, description, price, img_url
+              
 
+
+
+    
