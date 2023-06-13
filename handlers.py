@@ -1,8 +1,10 @@
-from loader import dp, bot
+from loader import dp
 from aiogram import types
 from save_xls import writer
 from scrap import array
+import os
 
+file_path = "pars.xlsx"
 
 @dp.message_handler(commands="start")
 async def pars_command(message: types.Message):
@@ -12,9 +14,13 @@ async def pars_command(message: types.Message):
     """
     await message.answer(text=text)
 
-@dp.message_handler(commands="scrap")
+@dp.message_handler(commands=["scrap"])
 async def scrap_comand(message: types.Message):
     await message.delete()
     writer(array)
-    await message.answer(text="parsing succesfuled ended")
-    await bot.send_file(chat_id=message.from_user.id, file="pars.xlsx")
+    with open("pars.xlsx", "rb") as document:
+        await message.answer_document(document=document, caption="parsing succesfuled completed")
+
+    
+    if os.path.exists(file_path):
+        os.remove(file_path)

@@ -25,6 +25,14 @@ def find_max_number_of_page(url):
     return page + 1
 
 
+def download_img(url):
+    response = requests.get(url, stream=True) #  второй параметр - потоковая загрузка файла, любой размер
+    r = open("images\\" + url.lstrip("https://scrapingclub.com/static/img/"), "wb")  #  путь куда записываем и как называем
+    for value in response.iter_content(1024*1024): #  какого размера блоки будут скачиваться - тут мегабайт
+        r.write(value)
+    r.close()
+
+
 def get_urls():
     for count in range(1, find_max_number_of_page(page_url)):
         # так как на сайте 7 страниц делаем цикл по поиску на всех страницах
@@ -50,7 +58,6 @@ def get_urls():
 
 def array():
     for card in get_urls():
-        xls_list = []
         response = requests.get(card, headers=headers)
         soup = BeautifulSoup(response.text, "lxml")
         data = soup.find("div", class_="card-body")
@@ -63,6 +70,7 @@ def array():
             # # по аналогии достали цену
         img_url = "https://scrapingclub.com" + soup.find("img", class_="card-img-top img-fluid").get("src")
             # # вытягиваем ссылку, тег имг, класс, а дальше ссылка не строка, по этому методом гет, по атрибуту срц ну и приклеиваем корневой адрес
+        download_img(img_url)
         yield name, description, price, img_url
               
 
