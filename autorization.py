@@ -50,24 +50,6 @@ def scrap_quotes():
             print("*" * 40)
 
         print(count)
-            
+
 connect()
 scrap_quotes()
-
-
-# page_number = str(1) + "/"
-# url = f"https://quotes.toscrape.com/page/{page_number}"
-# response = work.get(url, headers=headers)
-# soup = BeautifulSoup(response.text, "lxml")
-# quotes = soup.find_all("div", class_="quote")
-# print(response)
-
-
-
-# for quote in quotes:
-#     author = quote.find("small", class_="author").text
-#     text = quote.find("span", class_="text").text
-#     tags = quote.find("meta", class_="keywords").get("content").split(",")
-
-#     print(author, text, tags, sep="\n")
-#     print("*" * 40)
