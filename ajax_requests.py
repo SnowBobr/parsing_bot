@@ -16,6 +16,9 @@ soup = BeautifulSoup(resp.text, "lxml")
 
 #  Заходим в сеть, переходим на закладку Fetch/XHR и смотри есть ли перенаправление на другую страницу
 work_url = "https://scrapingclub.com/exercise/ajaxdetail/"
-response = requests.get(work_url).json
+response = requests.get(work_url).json()
+#   если в ответе идет json с обычным словарем, таким образом можно его забрать и использовать
+
+     
 
 print(response)
