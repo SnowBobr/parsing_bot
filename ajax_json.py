@@ -11,13 +11,12 @@ headers = {
 work = Session()
 work.get(url, headers=headers)
 resp = work.get(url, headers=headers)
-soup = BeautifulSoup(resp.text, "lxml")
-#  Это была имитация входа на сайт
 
 #  Заходим в сеть, переходим на закладку Fetch/XHR и смотри есть ли перенаправление на другую страницу
 work_url = "https://scrapingclub.com/exercise/ajaxdetail/"
 response = requests.get(work_url).json()
 #   если в ответе идет json с обычным словарем, таким образом можно его забрать и использовать
+#   есл содержит булевые значения - нужно импортировать библиотеку json и коныертировать
 
      
 
