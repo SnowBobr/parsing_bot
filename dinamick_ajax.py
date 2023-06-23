@@ -1,5 +1,6 @@
 from requests import Session
 from bs4 import BeautifulSoup
+import time, random
 
 
 started_url = "https://scrapingclub.com/exercise/list_infinite_scroll/"
@@ -14,12 +15,11 @@ def main(started_url):
     work = Session()
     work.headers.update(headers)
     """второй вариант передавать заголовки обманки"""
-    # resp = work.get(started_url)
-    # sp = BeautifulSoup(resp.text, "lxml")
-    # pagination = sp.find_all("a", class_="page-link").get("href")
-    # print(pagination)
+
     count = 1
-    while True:
+    pagination = 1
+
+    while count != pagination + 1:
         if count > 1:
             url = started_url + "?page=" + str(count)
         else:
@@ -30,12 +30,23 @@ def main(started_url):
         #     file.write(response.text)
         """тут была запись страницы на комп"""
         soup = BeautifulSoup(response.text, "lxml")
+
+        if count == 1:
+            pagination = int(soup.find("ul", class_="pagination invisible").find_all("li", class_="page-item")[-2].text)
+            """если страница первая, ищем пагинацию, получиаем списком все элементы - количество страниц
+            далее присваиваем предпоследний элемент, потому что последний - не номер страницы а переход дальше
+            """
+
+
+
         cards = soup.find_all("div", class_="col-lg-4 col-md-6 mb-4")
 
         for card in cards:
             name = card.find("h4", class_="card-title").text.replace("\n", "")
-            # print(name)
-
+            print(name)
+        
+        print(count)
+        time.sleep(random.randint(3, 7))
         count +=1
 
 
