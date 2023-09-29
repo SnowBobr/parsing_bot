@@ -18,7 +18,6 @@ def find_max_number_of_page(url):
     page = 1
     page_data = page_soup.find_all("a", class_="page-link")
     for i in page_data:
-        # sleep(random.randint(3, 7)) #  таким способом в начале каждого цикла ставим паузу на 3 - 7 секунды, что бы сайт не индетефицировал бота
         if i.text.isdigit():
             if int(i.text) > page:
                 page = int(i.text)
